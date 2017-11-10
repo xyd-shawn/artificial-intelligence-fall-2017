@@ -6,10 +6,13 @@ import math
 
 import pickle
 import argparse
+from tqdm import tqdm
+
 
 
 class myPinYin(object):
     def __init__(self, **kwargs):
+        self.ngram = kwargs.get('ngram', 2)
         pinyin_maps_file = kwargs.get('pinyin_maps_file', '../data/拼音汉字表.txt')
         words_count_file = kwargs.get('words_count_file', '../tmp/words_count_11.pkl')
         gram_2_count_file = kwargs.get('gram_2_count_file', '../tmp/gram_2_count_11.pkl')
@@ -20,7 +23,11 @@ class myPinYin(object):
         for pinyin_map in pinyin_maps:
             pinyin_map = pinyin_map.decode('gbk').strip().split(' ')
             self.pinyin_dict[pinyin_map[0]] = pinyin_map[1:]
+        print('--------------------')
+        print('加载已经提取好的语料信息')
+        print('--------------------')
         self.load_corpus_data(words_count_file, gram_2_count_file, gram_3_count_file)
+        print('加载完毕')
         self.total_count = sum(self.words_count.values())
 
     def load_corpus_data(self, words_count_file, gram_2_count_file, gram_3_count_file):
@@ -28,8 +35,15 @@ class myPinYin(object):
             self.words_count = pickle.load(f1)
         with open(gram_2_count_file, 'rb') as f2:
             self.gram_2_count = pickle.load(f2)
-        with open(gram_3_count_file, 'rb') as f3:
-            self.gram_3_count = pickle.load(f3)
+        if self.ngram == 3:
+            with open(gram_3_count_file, 'rb') as f3:
+                self.gram_3_count = pickle.load(f3)
+
+    def pinyins2words(self, pinyins, **kwargs):
+        if self.ngram == 2:
+            return self.pinyins2words_gram_2(pinyins, **kwargs)
+        else:
+            return self.pinyins2words_gram_3(pinyins, **kwargs)
 
     def preprocess(self, pinyins):
         trans_table = [self.pinyin_dict[pinyin] for pinyin in pinyins]
@@ -84,7 +98,7 @@ class myPinYin(object):
         return adj_weights
 
     def compute_adj_weight_gram_3(self, trans_table, **kwargs):
-        smooth_weight_2 = kwaegs.get('smooth_weight_2', 0.64)
+        smooth_weight_2 = kwargs.get('smooth_weight_2', 0.64)
         smooth_weight_3 = kwargs.get('smooth_weight_3', [0.5, 0.3, 0.2])
         adj_weights = {}
         adj_weights[0] = [math.log(self.words_count[x] / self.total_count) for x in trans_table[0]]
@@ -238,16 +252,45 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='options')
     parser.add_argument('-i', '--inputFile', default='../data/input.txt', help='input file')
     parser.add_argument('-o', '--outputFile', default='../data/output.txt', help='output file')
-    parser.add_argument('-n', '--ngrams', type=int, default=2, help='n-grams')
+    parser.add_argument('-n', '--ngram', type=int, default=2, help='N-gram')
+    parser.add_argument('-s', '--shell', action='store_true', default=False, help='use shell')
     args = parser.parse_args()
     input_file = args.inputFile
     output_file = args.outputFile
-    ngrams = args.ngrams
-    with open(input_file) as f:
-        pinyins = f.readlines()
-        print(pinyins)
-    my_pinyin = myPinYin()
-    for ww in pinyins:
-        pinyin_list = ww.strip().split(' ')
-        print(pinyin_list)
-        print(my_pinyin.pinyins2words_gram_3(pinyin_list))
+    ngram = args.ngram
+    use_shell = args.shell
+
+    print('--------------------')
+    if ngram == 2:
+        print('使用基于字的二元模型')
+    else:
+        print('使用基于字的三元模型')
+    my_pinyin = myPinYin(ngram=ngram)
+    print('--------------------')
+
+    if use_shell:
+
+        while True:
+            input_pinyins = input('>>> ')
+            if input_pinyins == 'exit':
+                sys.exit()
+            else:
+                try:
+                    pinyin_list = input_pinyins.strip().lower().split(' ')
+                    print(my_pinyin.pinyins2words(pinyin_list))
+                except:
+                    print('输入拼音无法转化，请重试！')
+    else:
+        with open(input_file) as f:
+            pinyins = f.readlines()
+        out = open(output_file, 'w')
+        print('开始处理输入文件')
+        for ww in tqdm(pinyins):
+            try:
+                pinyin_list = ww.strip().split(' ')
+                res = my_pinyin.pinyins2words(pinyin_list)
+            except:
+                res = '错误：拼音无法转化'
+            out.write(res + '\n')
+        out.close()
+        print('处理完毕')
