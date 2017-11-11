@@ -2,21 +2,19 @@
 本程序根据基于字的二元模型和三元模型实现简单的汉语拼音（全拼）输入法。
 
 文件（夹）说明：
-拼音输入法实验报告-徐亚东-2017311695.pdf    实验报告
 /src/    存放实验的源代码
 /src/corpus_analysis.py    从给定语料中提取N-gram统计信息。
 /src/pinyin_analysis.py    利用模型将输入的拼音转化为短语或者句子。
 /data/    存放实验需要用到的数据
 /data/input.txt    输入文件，每行为拼音串，音之间用空格分割，不包含标点符号。
 /data/output.txt    输出文件，根据输入文件给出的拼音串，转换后的汉字串，每句占一行，无标点，无空格。
-/data/一二级汉字表.txt    给出全部一二级汉字，共6763个。
-/data/拼音汉字表.txt    拼音-汉字对照表，每个音为一行，汉字之间用空格分割。
+/data/一二级汉字表.txt    给出全部一二级汉字，共6763个，gbk编码方式
+/data/拼音汉字表.txt    拼音-汉字对照表，每个音为一行，汉字之间用空格分割，gbk编码方式
 /corpus/    存放语料文件，如果需要提取语料（执行corpus_analysis.py），需要在其中加入相应语料
 /tmp/    存放从语料中提取的N-gram统计信息
 /tmp/words_count.pkl    单个字,unigram
 /tmp/gram_2_count.pkl    两个字,bigram
 /tmp/gram_3_count.pkl    三个字，trigram
-
 
 使用方法：
 进入/src/目录，
