@@ -14,9 +14,9 @@ class myPinYin(object):
     def __init__(self, **kwargs):
         self.ngram = kwargs.get('ngram', 2)
         pinyin_maps_file = kwargs.get('pinyin_maps_file', '../data/拼音汉字表.txt')
-        words_count_file = kwargs.get('words_count_file', '../tmp/words_count_11.pkl')
-        gram_2_count_file = kwargs.get('gram_2_count_file', '../tmp/gram_2_count_11.pkl')
-        gram_3_count_file = kwargs.get('gram_3_count_file', '../tmp/gram_3_count_11.pkl')
+        words_count_file = kwargs.get('words_count_file', '../tmp/words_count.pkl')
+        gram_2_count_file = kwargs.get('gram_2_count_file', '../tmp/gram_2_count.pkl')
+        gram_3_count_file = kwargs.get('gram_3_count_file', '../tmp/gram_3_count.pkl')
         with open(pinyin_maps_file, 'rb') as f:
             pinyin_maps = f.readlines()
         self.pinyin_dict = dict()
