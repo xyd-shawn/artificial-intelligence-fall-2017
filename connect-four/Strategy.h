@@ -114,8 +114,8 @@ public:
 	
 
 void clearArray(int M, int N, int** board);
-int uct_search(Node* s, int** initboard, int* inittop, int coef, int nx, int ny);
-Node* tree_policy(Node* v, int** curboard, int* curtop, int coef, int nx, int ny);
+int uct_search(Node* s, int** initboard, int* inittop, double coef, int nx, int ny);
+Node* tree_policy(Node* v, int** curboard, int* curtop, double coef, int nx, int ny);
 int default_policy(Node* v, int** curboard, int* curtop, int nx, int ny);
 void back_up(Node* v, int delta);
 int best_child(Node* v, double coef);

@@ -121,7 +121,7 @@ void clearArray(int M, int N, int** board){
 */
 
 
-int uct_search(Node* s, int** initboard, int* inittop, int coef, int nx, int ny) {
+int uct_search(Node* s, int** initboard, int* inittop, double coef, int nx, int ny) {
 	clock_t t0 = clock();
 	clock_t t1 = clock();
 	double sec = (double)(t1 - t0) / CLOCKS_PER_SEC;
@@ -144,7 +144,7 @@ int uct_search(Node* s, int** initboard, int* inittop, int coef, int nx, int ny)
 		v0 = s;
 
 		Node* v1 = tree_policy(v0, curboard, curtop, coef, nx, ny);
-		double delta = default_policy(v1, curboard, curtop, nx, ny);
+		int delta = default_policy(v1, curboard, curtop, nx, ny);
 		back_up(v1, delta);
 
 		delete[] curtop;
@@ -157,7 +157,7 @@ int uct_search(Node* s, int** initboard, int* inittop, int coef, int nx, int ny)
 	return res;
 }
 
-Node* tree_policy(Node* v, int** curboard, int* curtop, int coef, int nx, int ny) {
+Node* tree_policy(Node* v, int** curboard, int* curtop, double coef, int nx, int ny) {
 	int m = v->mm;
 	int n = v->nn;
 	while(v->state == 0) {
