@@ -5,3 +5,6 @@
 
 ## connect-four
 利用AlphaBeta剪枝算法和UCT算法生成四子棋对弈的策略文件。
+
+## digit-recognizer
+利用神经网络模型来实现手写数字识别任务。
